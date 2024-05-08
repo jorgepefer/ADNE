@@ -11,6 +11,8 @@ from torchvision import transforms
 from tempfile import TemporaryDirectory
 import wandb
 import numpy as np
+from torch.utils.data import SubsetRandomSampler
+
 
 # Constants necessary for the project
 import sys
@@ -110,6 +112,7 @@ class CNN(nn.Module):
                     criterion, 
                     extra_criterion,
                     epochs, 
+                    num_batches_per_iter,
                     nepochs_to_save=Saved_epochs):
         """Train the model and save the best one based on validation accuracy.
         
@@ -119,6 +122,7 @@ class CNN(nn.Module):
             optimizer: Optimizer to use during training.
             criterion: Loss function to use during training.
             epochs: Number of epochs to train the model.
+            num_batches_per_iter:# of batches to train with in each iteration 
             nepochs_to_save: Number of epochs to wait before saving the model.
 
         Returns:
@@ -136,15 +140,32 @@ class CNN(nn.Module):
 
             # Entrenamiento del modelo
             for epoch in range(epochs):
-
+                print(epoch)
                 train_loss = 0.0
                 train_accuracy = 0.0
                 train_score = 0.0
 
+
+                num_samples = len(train_loader.dataset)
+
+                # Calculate the number of samples to extract (10% of total samples)
+                num_samples_to_extract = train_loader.batch_size*num_batches_per_iter
+
+                # Generate random indices for the subset
+                subset_indices = torch.randperm(num_samples)[:num_samples_to_extract]
+
+                # Create a SubsetRandomSampler using the subset indices
+                subset_sampler = SubsetRandomSampler(subset_indices)
+
+                # Create a new DataLoader with the subset sampler
+                subset_loader = torch.utils.data.DataLoader(train_loader.dataset, 
+                                                            batch_size= train_loader.batch_size,
+                                                            sampler=subset_sampler)
                 self.train()  # Poner el modelo en modo de entrenamiento
 
-                for images, labels in train_loader:
-
+                for images, labels in subset_loader:
+                    print(images.shape)
+                    
                     # Zero gradient
                     optimizer.zero_grad()
                     images, labels = images.to(device), labels.to(device)
@@ -156,11 +177,11 @@ class CNN(nn.Module):
                     if extra_criterion is not None:
                         loss2 = extra_criterion(outputs, labels)
                         loss.data = torch.tensor(3*np.exp(float(loss2.data)/len(train_loader.dataset)))
-
+                    
                     # Backward pass and optimization
                     loss.backward()
                     optimizer.step()
-
+                  
                     # Track training loss
                     train_loss += loss.item()
 
@@ -188,9 +209,9 @@ class CNN(nn.Module):
 
 
                 # Calculate accuracy and loss
-                train_loss /= len(train_loader)
-                train_accuracy /= len(train_loader.dataset)
-                train_score /= len(train_loader.dataset)
+                train_loss /= len(subset_loader)
+                train_accuracy /= len(subset_loader.dataset)
+                train_score /= len(subset_loader.dataset)
                 history['train_loss'].append(train_loss)
                 history['train_accuracy'].append(train_accuracy)
                 history['train_score'].append(train_score)
@@ -210,9 +231,21 @@ class CNN(nn.Module):
                 self.eval()  # Poner el modelo en modo de evaluación
 
                 with torch.no_grad():
+                    
+                     # Generate random indices for the subset
+                    subset_indices_2 = torch.randperm(num_samples)[:num_samples_to_extract]
 
-                    for images, labels in valid_loader:
+                    # Create a SubsetRandomSampler using the subset indices
+                    subset_sampler = SubsetRandomSampler(subset_indices)
 
+                    # Create a new DataLoader with the subset sampler
+                    subset_loader2 = torch.utils.data.DataLoader(valid_loader.dataset, 
+                                                                batch_size= valid_loader.batch_size,
+                                                                sampler=subset_sampler)
+
+
+                    for images, labels in subset_loader2:
+                        print('Validation',images.shape)
                         images, labels = images.to(device), labels.to(device)
                         outputs = self(images)
                         loss = criterion(outputs, labels)
@@ -220,7 +253,7 @@ class CNN(nn.Module):
 
                         if extra_criterion is not None:
                             loss2 = extra_criterion(outputs, labels)
-                            loss.data = torch.tensor(3*np.exp(float(loss2.data)/len(valid_loader.dataset)))
+                            loss.data = torch.tensor(3*np.exp(float(loss2.data)/len(subset_loader2.dataset)))
 
                         # Track accuracy
 
@@ -246,9 +279,9 @@ class CNN(nn.Module):
 
 
                 # Calcular accuracy y loss en el conjunto de validación
-                valid_loss /= len(valid_loader)
-                valid_accuracy /= len(valid_loader.dataset)
-                valid_score /= len(valid_loader.dataset)
+                valid_loss /= len(subset_loader2)
+                valid_accuracy /= len(subset_loader2.dataset)
+                valid_score /= len(subset_loader2.dataset)
                 history['valid_loss'].append(valid_loss)
                 history['valid_accuracy'].append(valid_accuracy)
                 history['valid_score'].append(valid_score)
@@ -266,8 +299,8 @@ class CNN(nn.Module):
                         self.save(Model_name)
 
                 # Registrar métricas en W&B
-                # wandb.log({"BestModels_train_loss": train_loss, "BestModels_train_accuracy": train_accuracy, "BestModels_train_scores": train_score,
-                #         "BestModels_valid_loss": valid_loss, "BestModels_valid_accuracy": valid_accuracy, "BestModels_valid_scores": valid_score})
+                wandb.log({"BestModels_train_loss": train_loss, "BestModels_train_accuracy": train_accuracy, "BestModels_train_scores": train_score,
+                          "BestModels_valid_loss": valid_loss, "BestModels_valid_accuracy": valid_accuracy, "BestModels_valid_scores": valid_score})
 
                 
             torch.save(self.state_dict(), best_model_path)    

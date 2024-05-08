@@ -1,5 +1,6 @@
-
 AQUI ETOY
+0
+HOLA
 Traceback (most recent call last):
   File "C:\Users\LOLI\Desktop\ICAI\2º SEMESTRE\NO ESTRUCURADOS\TRABAJO FINAL\ADNE\src\2.Image Classification\src\model_training.py", line 95, in <module>
     model.train_model(device, train_loader, valid_loader,

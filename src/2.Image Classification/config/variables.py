@@ -34,6 +34,7 @@ Fontsize = 8
 
 Batch_size = 128  # 2985 images in the training set, 1500 in the validation set
 Images_size = 224  
+num_batches_per_iter=10
 
 # ResNet50: 224x224 images
 # ResNet18: ??x?? images

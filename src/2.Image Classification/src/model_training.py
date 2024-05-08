@@ -11,7 +11,7 @@ root_dir = Path(__file__).resolve().parent.parent
 # Agregar la ruta de la carpeta al sys.path
 sys.path.append(str(root_dir))
 
-from config.variables import Model_used, extra_models, Criterion, Optimizer, Learning_rate, Number_epochs, Model_name
+from config.variables import Model_used, extra_models, Criterion, Optimizer, Learning_rate, Number_epochs, Model_name,num_batches_per_iter
 from src.utils.data_loader import num_classes, train_loader, valid_loader
 from src.utils.cnn import CNN
 from src.utils.local_functs import CustomLoss
@@ -93,7 +93,7 @@ print('AQUI ETOY')
 
 # Entrenamiento del modelo (cnn.py ha sido modificado para incluir el registro de métricas en W&B y otras métricas)
 model.train_model(device, train_loader, valid_loader, 
-                  optimizer, criterion, extra_criterion, Number_epochs)
+                  optimizer, criterion, extra_criterion, Number_epochs,num_batches_per_iter)
 
 print('ULTRA SOLO')
 
