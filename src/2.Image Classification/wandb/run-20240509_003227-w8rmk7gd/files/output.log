@@ -1,0 +1,29 @@
+AQUI ETOY
+0
+torch.Size([128, 3, 224, 224])
+torch.Size([128, 3, 224, 224])
+torch.Size([128, 3, 224, 224])
+torch.Size([128, 3, 224, 224])
+torch.Size([128, 3, 224, 224])
+torch.Size([128, 3, 224, 224])
+torch.Size([128, 3, 224, 224])
+torch.Size([128, 3, 224, 224])
+torch.Size([128, 3, 224, 224])
+torch.Size([128, 3, 224, 224])
+Epoch 1/20 - Train Loss: 1.5015, Train Accuracy: 0.0437, Train Score: 0.0390
+Traceback (most recent call last):
+  File "C:\Users\LOLI\Desktop\ICAI\2º SEMESTRE\NO ESTRUCURADOS\TRABAJO FINAL\ADNE\src\2.Image Classification\src\model_training.py", line 95, in <module>
+    model.train_model(device, train_loader, valid_loader,
+  File "C:\Users\LOLI\Desktop\ICAI\2º SEMESTRE\NO ESTRUCURADOS\TRABAJO FINAL\ADNE\src\2.Image Classification\src\utils\cnn.py", line 247, in train_model
+    for images, labels in subset_loader2:
+  File "C:\Users\LOLI\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\site-packages\torch\utils\data\dataloader.py", line 631, in __next__
+    data = self._next_data()
+  File "C:\Users\LOLI\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\site-packages\torch\utils\data\dataloader.py", line 675, in _next_data
+    data = self._dataset_fetcher.fetch(index)  # may raise StopIteration
+  File "C:\Users\LOLI\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\site-packages\torch\utils\data\_utils\fetch.py", line 51, in fetch
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "C:\Users\LOLI\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\site-packages\torch\utils\data\_utils\fetch.py", line 51, in <listcomp>
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "C:\Users\LOLI\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\site-packages\torchvision\datasets\folder.py", line 228, in __getitem__
+    path, target = self.samples[index]
+IndexError: list index out of range

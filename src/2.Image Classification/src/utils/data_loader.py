@@ -18,7 +18,7 @@ valid_dir=data_dir/'validation'
 test_dir=data_dir/'Test'
 
 
-
+print('batch_size:',Batch_size)
 train_loader, valid_loader,test_loader, num_classes = load_data(train_dir, 
                                                     valid_dir,test_dir, 
                                                     batch_size=Batch_size, 

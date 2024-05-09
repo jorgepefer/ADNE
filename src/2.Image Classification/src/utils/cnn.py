@@ -233,15 +233,20 @@ class CNN(nn.Module):
                 with torch.no_grad():
                     
                      # Generate random indices for the subset
+                    num_samples = len(valid_loader.dataset)
+
+  
+                     # Generate random indices for the subset
+                    
                     subset_indices_2 = torch.randperm(num_samples)[:num_samples_to_extract]
 
                     # Create a SubsetRandomSampler using the subset indices
-                    subset_sampler = SubsetRandomSampler(subset_indices)
+                    subset_sampler2 = SubsetRandomSampler(subset_indices_2)
 
                     # Create a new DataLoader with the subset sampler
                     subset_loader2 = torch.utils.data.DataLoader(valid_loader.dataset, 
                                                                 batch_size= valid_loader.batch_size,
-                                                                sampler=subset_sampler)
+                                                                sampler=subset_sampler2)
 
 
                     for images, labels in subset_loader2:
